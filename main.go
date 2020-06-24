@@ -2,10 +2,20 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
+	"time"
 )
+
+var (
+	Hang time.Duration
+)
+
+func init() {
+	flag.DurationVar(&Hang, "h", 0, "hang for this time after completing all questions")
+}
 
 type Question interface {
 	Expected() int
@@ -36,6 +46,7 @@ func (q MulQuestion) Expected() int {
 }
 
 func main() {
+	flag.Parse()
 	questions, correct, incorrect := make([]Question, 0, 200), 0, 0
 	for i := 0; i <= 9; i++ {
 		for j := 0; j <= 9; j++ {
@@ -71,4 +82,5 @@ func main() {
 		fmt.Printf("Correct! (%v left) ", len(questions))
 	}
 	fmt.Printf("\n\nCorrect: %v, Incorrect: %v\n", correct, incorrect)
+	time.Sleep(Hang)
 }
