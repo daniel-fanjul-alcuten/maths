@@ -16,36 +16,56 @@ type SumQuestion struct {
 }
 
 func (q SumQuestion) String() string {
-	return fmt.Sprintf("%v + %v", q.S1, q.S2)
+	return fmt.Sprintf("%v+%v", q.S1, q.S2)
 }
 
 func (q SumQuestion) Expected() int {
 	return q.S1 + q.S2
 }
 
+type MulQuestion struct {
+	S1, S2 int
+}
+
+func (q MulQuestion) String() string {
+	return fmt.Sprintf("%vx%v", q.S1, q.S2)
+}
+
+func (q MulQuestion) Expected() int {
+	return q.S1 * q.S2
+}
+
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		s1 := rand.Intn(10)
-		s2 := rand.Intn(10)
-		q := SumQuestion{s1, s2}
-		fmt.Printf("%v = ", q)
-		text, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			continue
+	questions := make([]Question, 0, 200)
+	for i := 0; i <= 9; i++ {
+		for j := 0; j <= 9; j++ {
+			questions = append(questions, SumQuestion{i, j}, MulQuestion{i, j})
 		}
+	}
+	reader := bufio.NewReader(os.Stdin)
+	for len(questions) > 0 {
+		i := rand.Intn(len(questions))
+		q := questions[i]
 		var actual int
-		_, err = fmt.Sscanf(text, "%d", &actual)
-		if err != nil {
-			fmt.Println(err)
-			continue
+		for {
+			fmt.Printf("%v=", q)
+			text, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			_, err = fmt.Sscanf(text, "%d", &actual)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			break
 		}
 		if actual != q.Expected() {
-			fmt.Printf("Incorrect! %v = %v\n", q, q.Expected())
+			fmt.Printf("Incorrect! %v=%v\n", q, q.Expected())
 			continue
-		} else {
-			fmt.Printf("Correct! ")
 		}
+		questions[i], questions = questions[len(questions)-1], questions[:len(questions)-1]
+		fmt.Printf("Correct! (%v left) ", len(questions))
 	}
 }
