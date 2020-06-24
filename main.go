@@ -36,7 +36,7 @@ func (q MulQuestion) Expected() int {
 }
 
 func main() {
-	questions := make([]Question, 0, 200)
+	questions, correct, incorrect := make([]Question, 0, 200), 0, 0
 	for i := 0; i <= 9; i++ {
 		for j := 0; j <= 9; j++ {
 			questions = append(questions, SumQuestion{i, j}, MulQuestion{i, j})
@@ -62,10 +62,13 @@ func main() {
 			break
 		}
 		if actual != q.Expected() {
+			incorrect++
 			fmt.Printf("Incorrect! %v=%v\n", q, q.Expected())
 			continue
 		}
 		questions[i], questions = questions[len(questions)-1], questions[:len(questions)-1]
+		correct++
 		fmt.Printf("Correct! (%v left) ", len(questions))
 	}
+	fmt.Printf("\n\nCorrect: %v, Incorrect: %v\n", correct, incorrect)
 }
