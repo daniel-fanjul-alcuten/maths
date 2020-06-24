@@ -10,11 +10,15 @@ import (
 )
 
 var (
-	Hang time.Duration
+	MaxDigitSum int
+	MaxDigitMul int
+	Hang        time.Duration
 )
 
 func init() {
-	flag.DurationVar(&Hang, "h", 0, "hang for this time after completing all questions")
+	flag.IntVar(&MaxDigitSum, "s", 9, "Sum numbers from 0 until this number")
+	flag.IntVar(&MaxDigitMul, "p", 9, "Multiply numbers from 0 until this number")
+	flag.DurationVar(&Hang, "h", 0, "Hang for this time after completing all questions")
 }
 
 type Question interface {
@@ -48,9 +52,14 @@ func (q MulQuestion) Expected() int {
 func main() {
 	flag.Parse()
 	questions, correct, incorrect := make([]Question, 0, 200), 0, 0
-	for i := 0; i <= 9; i++ {
-		for j := 0; j <= 9; j++ {
-			questions = append(questions, SumQuestion{i, j}, MulQuestion{i, j})
+	for i := 0; i <= MaxDigitSum; i++ {
+		for j := 0; j <= MaxDigitSum; j++ {
+			questions = append(questions, SumQuestion{i, j})
+		}
+	}
+	for i := 0; i <= MaxDigitMul; i++ {
+		for j := 0; j <= MaxDigitMul; j++ {
+			questions = append(questions, MulQuestion{i, j})
 		}
 	}
 	reader := bufio.NewReader(os.Stdin)
